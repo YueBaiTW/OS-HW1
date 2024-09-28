@@ -65,6 +65,10 @@ ExceptionHandler(ExceptionType which)
 			val=kernel->machine->ReadRegister(4);
 			cout << "Print integer:" <<val << endl;
 			return;
+		case SC_Example:
+			val=kernel->machine->ReadRegister(4);
+			cout << "Example Value:" << val <<endl;
+			return; 
 /*		case SC_Exec:
 			DEBUG(dbgAddr, "Exec\n");
 			val = kernel->machine->ReadRegister(4);
