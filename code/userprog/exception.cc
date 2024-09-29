@@ -53,6 +53,9 @@ ExceptionHandler(ExceptionType which)
 {
 	int	type = kernel->machine->ReadRegister(2);
 	int	val;
+	int op1,op2,result;
+	char str[128];
+	int index,addr,letterChange;
 
     switch (which) {
 	case SyscallException:
@@ -83,6 +86,77 @@ ExceptionHandler(ExceptionType which)
 			cout << "return value:" << val << endl;
 			kernel->currentThread->Finish();
 			break;
+		case SC_Sleep:
+			val=kernel->machine->ReadRegister(4);
+			cout << "Sleep Time: " << val << "(ms)" <<endl;
+			kernel->alarm->WaitUntil(val);
+			return;
+		case SC_Add:
+			op1=kernel->machine->ReadRegister(4);
+			op2=kernel->machine->ReadRegister(5);
+			result=op1+op2;
+			kernel->machine->WriteRegister(2,result);
+			return;
+		case SC_Sub:
+			op1=kernel->machine->ReadRegister(4);
+			op2=kernel->machine->ReadRegister(5);
+			result=op1-op2;
+			kernel->machine->WriteRegister(2,result);
+			return;
+		case SC_Mul:
+			op1=kernel->machine->ReadRegister(4);
+			op2=kernel->machine->ReadRegister(5);
+			result=op1*op2;
+			kernel->machine->WriteRegister(2,result);
+			return;
+		case SC_Div:
+			op1=kernel->machine->ReadRegister(4);
+			op2=kernel->machine->ReadRegister(5);
+			if(op2 != 0)
+			{
+				result=op1/op2;
+				kernel->machine->WriteRegister(2,result);
+			}
+			else
+			{
+				cout << "Error: Divide by zero" << endl;
+				result=11115029;
+				kernel->machine->WriteRegister(2,result);
+			}
+			return;
+		case SC_Mod:
+			op1=kernel->machine->ReadRegister(4);
+			op2=kernel->machine->ReadRegister(5);
+			if(op2 != 0)
+			{
+				result=op1%op2;
+				kernel->machine->WriteRegister(2,result);
+			}
+			else
+			{
+				cout << "Error: Divide by zero" << endl;
+				result=11115029;
+				kernel->machine->WriteRegister(2,result);
+			}
+			return;
+		case SC_Print:
+			addr=kernel->machine->ReadRegister(4);
+			for(index=0;;index++)
+			{
+				kernel->machine->ReadMem(addr+index,1,(int*)&str[index]);
+				if(str[index] == '\0')
+				{
+					break;
+				}
+				if(str[index] == 'c' || str[index] == 'C')
+				{
+					str[index]='*';
+				}
+			}
+			kernel->machine->WriteRegister(2,index);
+			cout << "[B11115029_Print]" << str;
+			return;
+
 		default:
 		    cerr << "Unexpected system call " << type << "\n";
  		    break;

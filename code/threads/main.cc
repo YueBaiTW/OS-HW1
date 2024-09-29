@@ -73,6 +73,7 @@ main(int argc, char **argv)
     }
     debug = new Debug(debugArg);
     
+    DEBUG(dbgMy, "[DEBUG]B11115029");
     DEBUG(dbgThread, "Entering main");
 
     kernel = new KernelType(argc, argv);
